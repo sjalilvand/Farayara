@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>راهنمای کامل فرایارا — نصب، اجرا و استفاده</title>
+<style>
+  :root {
+    --primary: #0f766e; --primary-dark: #115e59; --primary-soft: #ccfbf1;
+    --bg: #f4f6fb; --surface: #fff; --border: #e2e8f0; --text: #1e293b; --muted: #64748b;
+    --warn: #b45309; --warn-soft: #fef3c7; --danger: #dc2626; --danger-soft: #fee2e2;
+    --ok: #16a34a; --ok-soft: #dcfce7; --info-soft: #e0f2fe;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Vazirmatn, 'Segoe UI', Tahoma, sans-serif;
+    background: var(--bg); color: var(--text); margin: 0; line-height: 2;
+    font-size: 14.5px;
+  }
+  .container { max-width: 980px; margin: 0 auto; padding: 24px 18px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
+    color: #fff; border-radius: 18px; padding: 36px 32px; margin-bottom: 28px;
+  }
+  header.hero h1 { margin: 0 0 6px; font-size: 30px; }
+  header.hero p { margin: 4px 0; color: #99f6e4; }
+  header.hero .badges { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  header.hero .b { background: rgba(255,255,255,0.12); border-radius: 20px; padding: 3px 14px; font-size: 12.5px; }
+  nav.toc {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 26px; margin-bottom: 28px;
+  }
+  nav.toc h2 { margin: 0 0 10px; font-size: 17px; color: var(--primary-dark); }
+  nav.toc ol { margin: 0; padding-right: 20px; columns: 2; column-gap: 40px; }
+  nav.toc li { padding: 2px 0; }
+  nav.toc a { color: var(--primary); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  section.card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 26px 30px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(15,23,42,.06);
+  }
+  h2.sec { color: var(--primary-dark); font-size: 21px; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-soft); }
+  h3 { color: var(--primary-dark); font-size: 16.5px; margin: 22px 0 8px; }
+  code {
+    background: #eef2f7; border-radius: 5px; padding: 1px 7px; font-size: 13px;
+    font-family: 'Cascadia Code', Consolas, monospace; direction: ltr; unicode-bidi: embed;
+  }
+  pre {
+    background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 16px 20px;
+    overflow-x: auto; direction: ltr; text-align: left; font-size: 13px; line-height: 1.9;
+  }
+  pre .c { color: #7dd3fc; }
+  pre .g { color: #86efac; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13.5px; }
+  th { background: #f1f5f9; text-align: right; padding: 9px 12px; border: 1px solid var(--border); }
+  td { padding: 8px 12px; border: 1px solid var(--border); }
+  tr:nth-child(even) td { background: #fafcff; }
+  .note { border-radius: 10px; padding: 12px 18px; margin: 12px 0; font-size: 13.5px; }
+  .note.info { background: var(--info-soft); color: #075985; }
+  .note.warn { background: var(--warn-soft); color: var(--warn); }
+  .note.danger { background: var(--danger-soft); color: var(--danger); }
+  .note.ok { background: var(--ok-soft); color: var(--ok); }
+  .step {
+    display: flex; gap: 12px; margin: 14px 0; align-items: flex-start;
+  }
+  .step .n {
+    background: var(--primary); color: #fff; min-width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; margin-top: 4px;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } nav.toc ol { columns: 1; } }
+  .kbd { background: #1e293b; color: #fff; border-radius: 5px; padding: 1px 8px; font-size: 12.5px; direction: ltr; display: inline-block; }
+  .feature { border-right: 3px solid var(--primary); background: #f8fafc; padding: 10px 16px; border-radius: 8px; margin: 8px 0; }
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 30px; }
+  .anchor-target { scroll-margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <h1>فرایارا — راهنمای کامل</h1>
+  <p>سامانه یکپارچه مدیریت فرایندها، فرم‌ها، کاتالوگ داده، آزمون‌های مشاوره و قراردادها</p>
+  <p style="color:#e2e8f0; font-size:13px;">نسخه ۱.۰ — پیاده‌سازی بر اساس سند جامع نیازمندی‌ها (FastAPI + React + SQLite)</p>
+  <div class="badges">
+    <span class="b">Python / FastAPI</span>
+    <span class="b">React 18 + TypeScript</span>
+    <span class="b">SQLite (WAL)</span>
+    <span class="b">bpmn-js</span>
+    <span class="b">RTL فارسی</span>
+    <span class="b">JWT + Argon2</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>فهرست مطالب</h2>
+  <ol>
+    <li><a href="#intro">معرفی و معماری سامانه</a></li>
+    <li><a href="#prereq">پیش‌نیازها</a></li>
+    <li><a href="#install-backend">نصب و راه‌اندازی بک‌اند</a></li>
+    <li><a href="#install-frontend">نصب و راه‌اندازی فرانت‌اند</a></li>
+    <li><a href="#accounts">حساب‌های نمونه و ورود</a></li>
+    <li><a href="#dashboard">داشبورد مدیریتی</a></li>
+    <li><a href="#catalog">کاتالوگ داده (فیلدهای مرجع)</a></li>
+    <li><a href="#forms">فرم‌ساز و ثبت پاسخ</a></li>
+    <li><a href="#processes">طراحی و اجرای فرایند (BPMN)</a></li>
+    <li><a href="#tasks">کارتابل من (وظایف)</a></li>
+    <li><a href="#assessments">آزمون‌های مشاوره</a></li>
+    <li><a href="#contracts">قراردادها</a></li>
+    <li><a href="#users">کاربران، نقش‌ها و مجوزها</a></li>
+    <li><a href="#audit">سوابق تغییرات (ممیزی)</a></li>
+    <li><a href="#settings">تنظیمات و پشتیبان‌گیری</a></li>
+    <li><a href="#scenarios">سناریوهای عملی گام‌به‌گام</a></li>
+    <li><a href="#api">مرجع API</a></li>
+    <li><a href="#security">امنیت و استقرار عملیاتی</a></li>
+    <li><a href="#troubleshoot">عیب‌یابی (FAQ)</a></li>
+    <li><a href="#limits">محدودیت‌های شناخته‌شده و نقشه راه</a></li>
+  </ol>
+</nav>
+
+<!-- ==================== ۱. معرفی ==================== -->
+<section class="card anchor-target" id="intro">
+  <h2 class="sec">۱) معرفی و معماری سامانه</h2>
+  <p>
+    فرایارا یک سامانه تحت وب برای طراحی، ثبت، نسخه‌بندی، استفاده و گزارش‌گیری از فرایندها، فرم‌ها، داده‌ها،
+    آزمون‌های مشاوره و الگوهای قرارداد است. هدف اصلی این است که اطلاعات سازمان به‌جای فایل‌های پراکنده،
+    به‌صورت منابع شناسه‌دار (کد نمایشی + UUID)، نسخه‌دار، دارای مالک و وضعیت نگهداری شوند.
+  </p>
+  <div class="feature"><b>هشت زیرسیستم مطابق سند:</b> مدیریت کاربران و دسترسی، مدیریت فرایندها، مدیریت فرم‌ها، کاتالوگ داده، مدیریت آزمون‌ها، مدیریت قراردادها، گزارش‌ها و داشبوردها، مدیریت اسناد و ممیزی.</div>
+
+  <h3>معماری (Modular Monolith)</h3>
+<pre>
+React (RTL فارسی)
+   │  HTTPS / REST API  (/api/v1)
+   ▼
+FastAPI
+   ├── Authentication &amp; Authorization  (JWT + Argon2 + RBAC)
+   ├── Workflow Engine        ← موتور اجرای محدود BPMN
+   ├── Forms                  ← فرم‌ساز و ثبت پاسخ
+   ├── Data Catalog           ← کاتالوگ مرکزی فیلدها
+   ├── Assessments            ← بانک آزمون + نمره‌گذاری امن
+   ├── Contracts              ← الگو و تولید قرارداد
+   ├── Reporting              ← داشبوردها و خروجی‌ها
+   └── Audit &amp; Files          ← ممیزی، فایل، پشتیبان‌گیری
+   │
+   ├── SQLite (WAL + foreign_keys)
+   └── Private File Storage / Background Jobs
+</pre>
+
+  <h3>اصل جداسازی طراحی از اجرا (بخش ۱ سند)</h3>
+  <p>
+    طراحی نمودار BPMN با اجرای واقعی آن متفاوت است. در این پیاده‌سازی، ویرایشگر bpmn-js پشتیبانی کامل
+    مدل‌سازی را دارد، اما موتور اجرایی نسخه نخست فقط این عناصر را واقعاً اجرا می‌کند:
+  </p>
+  <table>
+    <tr><th>قابل اجرا (دامنه موتور نسخه نخست)</th><th>فقط قابل طراحی (خارج از دامنه اجرا)</th></tr>
+    <tr>
+      <td>رویداد شروع/پایان ساده، User Task، مسیر ترتیبی، Exclusive Gateway با شرط روی داده‌های فرم</td>
+      <td>Parallel / Inclusive / Event-Based Gateway، Timer، Service/Script/Manual Task، Subprocess، Call Activity، پیام‌ها، Boundary Event و…</td>
+    </tr>
+  </table>
+  <div class="note warn">
+    اگر نموداری شامل عناصر خارج از دامنه اجرا باشد، در زمان «انتشار اجرایی» با پیام روشن مسدود می‌شود
+    (ماتریس پشتیبانی BPMN — بخش ۴.۲ سند). عناصر طراحی می‌شوند ولی اجرای خودکار نمی‌گیرند.
+  </div>
+</section>
+
+<!-- ==================== ۲. پیش‌نیازها ==================== -->
+<section class="card anchor-target" id="prereq">
+  <h2 class="sec">۲) پیش‌نیازها</h2>
+  <table>
+    <tr><th>ابزار</th><th>حداقل نسخه</th><th>لینک دریافت</th><th>بررسی نصب</th></tr>
+    <tr><td>Python</td><td>3.10</td><td><code>https://python.org/downloads</code></td><td><code>python3 --version</code></td></tr>
+    <tr><td>Node.js + npm</td><td>18</td><td><code>https://nodejs.org</code></td><td><code>node --version</code></td></tr>
+    <tr><td>Git (اختیاری)</td><td>2.30</td><td><code>https://git-scm.com</code></td><td><code>git --version</code></td></tr>
+  </table>
+  <div class="note info">
+    روی ویندوز، به‌جای <code>python3</code> از <code>python</code> و به‌جای <code>source .venv/bin/activate</code>
+    از <code>.venv\Scripts\activate</code> استفاده کنید.
+  </div>
+</section>
+
+<!-- ==================== ۳. نصب بک‌اند ==================== -->
+<section class="card anchor-target" id="install-backend">
+  <h2 class="sec">۳) نصب و راه‌اندازی بک‌اند</h2>
+
+  <div class="step"><div class="n">1</div><div>
+    <b>ورود به پوشه بک‌اند و ساخت محیط مجازی:</b>
+<pre>
+cd Farayara/backend
+python3 -m venv .venv
+<span class="c"># لینوکس/مک:</span>
+source .venv/bin/activate
+<span class="c"># ویندوز:</span>
+.venv\Scripts\activate
+</pre>
+  </div></div>
+
+  <div class="step"><div class="n">2</div><div>
+    <b>نصب وابستگی‌ها:</b>
+<pre>
+pip install -r requirements.txt
+</pre>
+    <span class="muted">شامل: FastAPI، Uvicorn، SQLAlchemy، Pydantic v2، PyJWT، Argon2-cffi، Openpyxl، bleach، Alembic، pytest و…</span>
+  </div></div>
+
+  <div class="step"><div class="n">3</div><div>
+    <b>بارگذاری داده اولیه (Seed):</b>
+<pre>
+python -m app.seed
+</pre>
+    <p>
+      این دستور پایگاه داده <code>backend/data/farayara.db</code> را می‌سازد و شامل: سازمان نمونه، ۲۶ مجوز،
+      ۱۱ نقش سند، ۹ کاربر نمونه، ۱۱ فیلد مرجع کاتالوگ، یک فرم منتشرشده «درخواست خدمات»، یک فرایند
+      منتشرشده با Gateway شرطی، یک آزمون نمونه دارای مجوز داخلی با قواعد و مثال‌های مرجع، و یک الگوی
+      قرارداد منتشرشده است. اجرای دوباره seed تکرار نمی‌شود (ایمن).
+    </p>
+  </div></div>
+
+  <div class="step"><div class="n">4</div><div>
+    <b>اجرای سرور:</b>
+<pre>
+uvicorn app.main:app --reload --port 8000
+</pre>
+    <ul>
+      <li>سامانه (API): <code>http://localhost:8000</code></li>
+      <li>مستندات تعاملی Swagger: <code>http://localhost:8000/api/docs</code></li>
+    </ul>
+  </div></div>
+
+  <div class="step"><div class="n">5</div><div>
+    <b>(اختیاری) مهاجرت‌های Alembic:</b>
+<pre>
+<span class="c"># اعمال مهاجرت‌ها روی یک دیتابیس تازه:</span>
+alembic upgrade head
+<span class="c"># پس از تغییر مدل‌ها، تولید مهاجرت جدید:</span>
+alembic revision --autogenerate -m "describe change"
+alembic upgrade head
+</pre>
+  </div></div>
+
+  <div class="step"><div class="n">6</div><div>
+    <b>(اختیاری) اجرای تست‌ها:</b>
+<pre>
+python -m pytest tests/ -v
+</pre>
+    <span class="muted">۳۲ تست شامل معیارهای پذیرش سند: AC-01 تا AC-16.</span>
+  </div></div>
+
+  <h3>متغیرهای محیطی مهم</h3>
+  <table>
+    <tr><th>متغیر</th><th>پیش‌فرض</th><th>توضیح</th></tr>
+    <tr><td><code>FARAYARA_SECRET_KEY</code></td><td>تصادفی در هر اجرا</td><td>در محیط عملیاتی <b>الزامی</b> است؛ کلید امضای توکن‌ها</td></tr>
+    <tr><td><code>FARAYARA_DATABASE_URL</code></td><td><code>sqlite:///data/farayara.db</code></td><td>مسیر دیتابیس (قابل انتقال به PostgreSQL در آینده)</td></tr>
+    <tr><td><code>FARAYARA_CORS_ORIGINS</code></td><td><code>http://localhost:5173</code></td><td>مبداهای مجاز CORS</td></tr>
+    <tr><td><code>FARAYARA_MAX_UPLOAD_SIZE_MB</code></td><td>20</td><td>حداکثر حجم فایل آپلودی</td></tr>
+  </table>
+  <div class="note danger">
+    اگر <code>FARAYARA_SECRET_KEY</code> تنظیم نشود، با هر ری‌استارت سرور کلید عوض می‌شود و همه کاربران باید دوباره وارد شوند.
+    در استقرار عملیاتی حتماً یک مقدار تصادفی ثابت تنظیم کنید.
+  </div>
+</section>
+
+<!-- ==================== ۴. نصب فرانت ==================== -->
+<section class="card anchor-target" id="install-frontend">
+  <h2 class="sec">۴) نصب و راه‌اندازی فرانت‌اند</h2>
+  <div class="step"><div class="n">1</div><div>
+<pre>
+cd Farayara/frontend
+npm install
+</pre>
+  </div></div>
+  <div class="step"><div class="n">2</div><div>
+<pre>
+npm run dev
+</pre>
+    <p>سامانه روی <code>http://localhost:5173</code> در دسترس است. درخواست‌های <code>/api</code> به‌صورت خودکار به بک‌اند (پورت ۸۰۰۰) پروکسی می‌شوند.</p>
+  </div></div>
+  <div class="step"><div class="n">3</div><div>
+    <b>(اختیاری) build نسخه نهایی:</b>
+<pre>
+npm run build      # خروجی در پوشه dist/
+npm run preview    # پیش‌نمایش نسخه build شده
+</pre>
+  </div></div>
+  <div class="note info">
+    برای استقرار عملیاتی، پوشه <code>dist</code> را در Nginx/Caddy قرار دهید و <code>/api</code> را به پورت بک‌اند reverse-proxy کنید
+    (نمونه پیکربندی در بخش امنیت).
+  </div>
+</section>
+<!-- ==================== ۵. حساب‌ها ==================== -->
+<section class="card anchor-target" id="accounts">
+  <h2 class="sec">۵) حساب‌های نمونه و ورود</h2>
+  <p>پس از اجرای seed، با این حساب‌ها وارد <code>http://localhost:5173</code> شوید:</p>
+  <table>
+    <tr><th>نقش (مطابق سند)</th><th>نام کاربری</th><th>رمز عبور</th><th>دسترسی‌های کلیدی</th></tr>
+    <tr><td>مدیر سامانه</td><td><code>admin</code></td><td><code>Admin@1234</code></td><td>همه چیز + تنظیمات + پشتیبان‌گیری</td></tr>
+    <tr><td>مدیر سازمان</td><td><code>orgadmin</code></td><td><code>Org@1234</code></td><td>کاربران، گزارش‌ها، لغو اجرای فرایند</td></tr>
+    <tr><td>طراح فرایند</td><td><code>pdesigner</code></td><td><code>Proc@1234</code></td><td>ایجاد فرایند و نمودار BPMN (انتشار با مجوز جدا)</td></tr>
+    <tr><td>طراح فرم</td><td><code>fdesigner</code></td><td><code>Form@1234</code></td><td>فرم‌ساز و انتشار نسخه فرم</td></tr>
+    <tr><td>متولی داده</td><td><code>steward</code></td><td><code>Data@1234</code></td><td>کاتالوگ داده، تأیید و ادغام فیلدها</td></tr>
+    <tr><td>متخصص آزمون</td><td><code>assessor</code></td><td><code>Assess@1234</code></td><td>بانک آزمون، تأیید علمی/حقوقی، اجرا و نتایج</td></tr>
+    <tr><td>کارشناس قرارداد</td><td><code>contractx</code></td><td><code>Contract@1234</code></td><td>الگوی قرارداد، تأیید حقوقی، تولید قرارداد</td></tr>
+    <tr><td>کاربر اجرایی</td><td><code>operator</code></td><td><code>Oper@1234</code></td><td>تکمیل فرم، شروع فرایند، کارتابل</td></tr>
+    <tr><td>ناظر/حسابرس</td><td><code>auditor</code></td><td><code>Audit@1234</code></td><td>فقط مشاهده سوابق و داشبورد (بدون تغییر)</td></tr>
+  </table>
+  <div class="note danger">
+    این رمزها فقط برای استقرار آزمایشی هستند. پیش از بهره‌برداری واقعی همه رمزها را تغییر دهید
+    (صفحه «کاربران و نقش‌ها» → ویرایش کاربر → رمز عبور جدید).
+  </div>
+  <h3>مجوزهای مستقل حساس (بخش ۳.۲ سند)</h3>
+  <ul>
+    <li>طراحی فرم (<code>form.create</code>) از مشاهده پاسخ‌ها (<code>form.submissions.view</code>) جداست.</li>
+    <li>مشاهده نتایج روان‌شناختی مجوز مستقل <code>assessment.result.view</code> می‌خواهد.</li>
+    <li>خروجی گرفتن داده‌ها (<code>export.data</code>) و دریافت فایل (<code>file.download</code>) مجوز جداگانه دارد.</li>
+    <li>کنترل دسترسی در <b>بک‌اند</b> انجام می‌شود؛ مخفی‌شدن دکمه در فرانت کافی نیست (تست AC-16).</li>
+  </ul>
+</section>
+
+<!-- ==================== ۶. داشبورد ==================== -->
+<section class="card anchor-target" id="dashboard">
+  <h2 class="sec">۶) داشبورد مدیریتی</h2>
+  <p>صفحه نخست پس از ورود؛ شاخص‌های عمومی با تعریف محاسباتی روشن (بخش ۱۳.۱ سند):</p>
+  <ul>
+    <li><b>کارت‌های آماری:</b> فرایندها (به‌همراه تعداد نسخه منتشرشده)، فرم‌ها، فیلدهای فعال کاتالوگ، پاسخ‌های نهایی ثبت‌شده، اجرای آزمون‌ها، قراردادهای تولیدشده، وظایف باز کل سامانه و وظایف باز شما.</li>
+    <li><b>روند پاسخ‌های ۱۴ روز اخیر:</b> نمودار میله‌ای تعداد پاسخ‌های ثبت‌شده به تفکیک روز.</li>
+    <li><b>وضعیت نسخه‌های فرایند:</b> سهم پیش‌نویس/منتشرشده/بازنشسته.</li>
+    <li><b>پراستفاده‌ترین فیلدها:</b> بر اساس تعریف داشبورد اصلی سند — «تعداد فرم‌های منطقی متمایزی که از فیلد استفاده می‌کنند».</li>
+  </ul>
+  <div class="note info">
+    برای جداسازی مفاهیم، «تعداد فرم» همیشه یعنی تعداد فرم منطقی و «نسخه منتشرشده» جداگانه گزارش می‌شود (الزام بخش ۱۳ سند).
+  </div>
+</section>
+
+<!-- ==================== ۷. کاتالوگ ==================== -->
+<section class="card anchor-target" id="catalog">
+  <h2 class="sec">۷) کاتالوگ داده (فیلدهای مرجع)</h2>
+  <p>
+    هسته استانداردسازی اطلاعات سازمان (بخش ۷ سند). برای مثال «شماره موبایل» یک فیلد مرجع است که
+    می‌تواند در ده فرم با عنوان نمایشی متفاوت استفاده شود — بدون آنکه هویت فیلد عوض شود.
+  </p>
+  <h3>ایجاد فیلد مرجع</h3>
+  <div class="step"><div class="n">1</div><div>به «کاتالوگ داده» بروید و روی «+ فیلد مرجع جدید» بزنید.</div></div>
+  <div class="step"><div class="n">2</div><div>
+    عنوان فارسی را بنویسید — سامانه بلافاصله <b>فیلدهای مشابه</b> را پیشنهاد می‌دهد (بدون ادغام خودکار، طبق بخش ۷.۳ سند). اگر فیلد مشابه وجود دارد، از همان استفاده کنید.
+  </div></div>
+  <div class="step"><div class="n">3</div><div>نام فنی لاتین (<code>mobile_number</code>)، نوع داده، دسته‌بندی، مترادف‌ها، سطح حساسیت (عادی/حساس/بسیار حساس)، پرچم‌های «هویتی» و «سلامت» و قواعد اعتبارسنجی JSON را تکمیل و ذخیره کنید.</div></div>
+
+  <h3>فراوانی چندشاخصی (بخش ۷.۴ سند)</h3>
+  <p>در صفحه جزئیات هر فیلد، شاخص‌های مستقل نمایش داده می‌شود:</p>
+  <table>
+    <tr><th>شاخص</th><th>تعریف</th></tr>
+    <tr><td>تعداد فرم‌های استفاده‌کننده</td><td>فرم‌های منطقی متمایز دارای فیلد (مبنای داشبورد اصلی)</td></tr>
+    <tr><td>تعداد نسخه‌های استفاده‌کننده</td><td>نسخه‌های فرم دارای فیلد</td></tr>
+    <tr><td>تعداد جایگاه‌ها</td><td>دفعات حضور فیلد در ساختار فرم‌ها</td></tr>
+    <tr><td>پاسخ ثبت‌شده / مقادیر غیرخالی / نرخ تکمیل</td><td>بر اساس جدول مقادیر گزارش‌پذیر پاسخ‌ها</td></tr>
+    <tr><td>فراوانی مقادیر</td><td>توزیع پاسخ‌ها (مثلاً چند «بله» و چند «خیر»)</td></tr>
+  </table>
+  <h3>مسیر استفاده</h3>
+  <p>
+    صفحه جزئیات فیلد نشان می‌دهد «فیلد ← نسخه فرم» در کدام فرم‌ها با کدام عنوان و الزام استفاده شده است.
+  </p>
+  <div class="note warn">
+    فیلد استفاده‌شده حذف فیزیکی نمی‌شود؛ فقط «غیرفعال‌سازی» می‌شود (حذف منطقی — بخش ۷.۳).
+    تغییر نوع یا قواعد فیلد منتشرشده یک <b>نسخه جدید</b> فیلد می‌سازد.
+  </div>
+</section>
+
+<!-- ==================== ۸. فرم‌ساز ==================== -->
+<section class="card anchor-target" id="forms">
+  <h2 class="sec">۸) فرم‌ساز و ثبت پاسخ</h2>
+  <h3>ساخت فرم با کشیدن و رهاکردن</h3>
+  <div class="step"><div class="n">1</div><div>در صفحه «فرم‌ها» روی «+ فرم جدید» بزنید؛ مستقیماً به فرم‌ساز می‌روید.</div></div>
+  <div class="step"><div class="n">2</div><div>از <b>جعبه‌ابزار</b> سمت راست، نوع فیلد را با ماوس بکشید و در «ساختار فرم» رها کنید. انواع پشتیبانی‌شده: متن کوتاه/بلند، عدد، مبلغ، درصد، تاریخ، انتخاب تکی/چندگانه، بله/خیر، ایمیل، تلفن، کد ملی (با بررسی checksum)، نشانی وب.</div></div>
+  <div class="step"><div class="n">3</div><div>با کشیدن، ترتیب فیلدها را جابه‌جا کنید. روی هر فیلد کلیک کنید تا پنل مشخصات باز شود: عنوان نمایشی، کلید فنی، متن راهنما، الزامی بودن، گزینه‌ها، حداقل/حداکثر.</div></div>
+  <div class="step"><div class="n">4</div><div><b>اتصال به کاتالوگ:</b> با دکمه «اتصال به فیلد کاتالوگ» فیلد را به فیلد مرجع متصل کنید تا فراوانی استفاده آن قابل رصد باشد. اتصال، نوع و قواعد اعتبارسنجی را از کاتالوگ می‌گیرد.</div></div>
+  <div class="step"><div class="n">5</div><div>با «پیش‌نمایش» شکل نهایی فرم را ببینید؛ با «ذخیره ساختار» ذخیره کنید؛ با «انتشار نسخه» فرم را برای پاسخ‌گیری منتشر کنید.</div></div>
+
+  <h3>نسخه‌بندی فرم (AC-06)</h3>
+  <ul>
+    <li>نسخه <b>منتشرشده تغییرناپذیر</b> است؛ دکمه ویرایشگر روی نسخه منتشرشده غیرفعال است.</li>
+    <li>برای ویرایش، «ایجاد نسخه جدید برای ویرایش» را بزنید — نسخه پیش‌نویس جدید با همان ساختار ساخته می‌شود.</li>
+    <li>پاسخ‌های قبلی به نسخه خودشان متصل می‌مانند و هرگز تغییر نمی‌کنند.</li>
+  </ul>
+
+  <h3>تکمیل فرم و کد رهگیری</h3>
+  <p>
+    از فهرست فرم‌ها، روی فرم منتشرشده «تکمیل فرم» بزنید. اعتبارسنجی الزامی‌ها، قالب (pattern)، ایمیل و
+    کد ملی (با الگوریتم checksum) سمت کلاینت و الزامی‌ها مجدداً سمت سرور انجام می‌شود. پس از ثبت نهایی،
+    <b>کد رهگیری</b> (مانند <code>TRK-00000042</code>) نمایش داده می‌شود.
+  </p>
+
+  <h3>پاسخ‌های ثبت‌شده و خروجی‌ها</h3>
+  <p>در صفحه پاسخ‌های هر فرم: مشاهده جزئیات هر پاسخ + خروجی CSV / Excel / JSON با محافظت در برابر فرمول‌تزریقی (پیشوند <code>'</code> برای مقادیر خطرناک — بخش ۱۹ سند). خروجی CSV با BOM ذخیره می‌شود تا فارسی در Excel درست نمایش داده شود.</p>
+  <div class="note info">
+    «خروجی تعریف فرم» (JSON قابل ورود مجدد) از دکمه‌ای در API: <code>POST /forms/{id}/export</code> — و «خروجی پاسخ‌ها» دو نوع جدا هستند (بخش ۶.۵ سند).
+  </div>
+</section>
+
+<!-- ==================== ۹. فرایندها ==================== -->
+<section class="card anchor-target" id="processes">
+  <h2 class="sec">۹) طراحی و اجرای فرایند (BPMN)</h2>
+  <h3>ویرایشگر bpmn-js</h3>
+  <div class="step"><div class="n">1</div><div>در صفحه «فرایندها» یک فرایند بسازید و وارد «مدیریت» شوید — تب «نمودار BPMN» ویرایشگر کامل باز می‌شود.</div></div>
+  <div class="step"><div class="n">2</div><div>از پالت سمت چپ، عناصر (رویداد شروع/پایان، وظیفه کاربر، Gateway، رویداد میانی، زیرفرایند، Pool/Lane و…) را بکشید و با فلش‌ها به هم متصل کنید. دابل‌کلیک برای تغییر نام.</div></div>
+  <div class="step"><div class="n">3</div><div>
+    <b>اتصال فرم و نقش به گره‌ها:</b> روی هر User Task کلیک کنید تا در پنل کناری، «فرم مرحله» (از نسخه‌های منتشرشده فرم) و «نقش مجری» یا «کاربر مجری مشخص» را تعیین کنید. روی یال‌های خروجی Gateway کلیک کنید و شرط مسیر را بنویسید (مثال: <code>review_result == "yes"</code>).
+  </div></div>
+  <div class="step"><div class="n">4</div><div>«ذخیره نمودار» هم XML و هم تصویر SVG نسخه را ذخیره می‌کند. «اعتبارسنجی» خطاهای ساختاری و <b>عناصر خارج از دامنه اجرا</b> را گزارش می‌دهد (AC-01، AC-02).</div></div>
+  <div class="step"><div class="n">5</div><div>«انتشار نسخه» (با مجوز <code>process.publish</code>) فقط برای نمودار معتبرِ فاقد عنصر خارج از دامنه اجرا ممکن است؛ در غیر این صورت پیام روشن می‌دهد.</div></div>
+
+  <h3>اجرای فرایند</h3>
+  <div class="step"><div class="n">1</div><div>روی نسخه منتشرشده، «شروع اجرا» بزنید و متغیرهای اولیه JSON را وارد کنید (AC-03 — شروع فقط روی نسخه منتشرشده).</div></div>
+  <div class="step"><div class="n">2</div><div>موتور اجرا به‌ترتیب پیش می‌رود؛ در هر User Task می‌ایستد و وظیفه در <b>کارتابل</b> نقش/کاربر مجری می‌نشیند و اعلان ثبت می‌شود.</div></div>
+  <div class="step"><div class="n">3</div><div>در Gateway، شرط یال‌ها روی متغیرهای نمونه (داده‌های فرم مراحل قبلی) ارزیابی امن می‌شود؛ مسیر درست انتخاب و در تاریخچه ثبت می‌گردد.</div></div>
+  <div class="step"><div class="n">4</div><div>در تب «اجراها»، کد پیگیری (<code>INS-...</code>)، وضعیت، وظایف و خط‌زمانی کامل رویدادها قابل مشاهده است. مدیر می‌تواند اجرای در حال رشد را لغو کند.</div></div>
+
+  <div class="note ok">
+    <b>تضمین‌های اجرایی (بخش ۵.۳ سند):</b> تکمیل تکراری یک وظیفه دو انتقال ایجاد نمی‌کند (AC-04)؛
+    تغییر وضعیت و ثبت داده در یک تراکنش انجام می‌شود؛ تمام تغییرات مسیر در ProcessEvent قابل ممیزی است؛
+    هر نمونه به نسخه ثابت فرایند متصل است.
+  </div>
+
+  <h3>فرایند نمونه seed</h3>
+  <p>
+    «فرایند بررسی و تأیید درخواست خدمات» با مسیر: ثبت درخواست → بررسی درخواست (فرم متصل، نقش کاربر اجرایی)
+    → Gateway «نتیجه بررسی؟» → تأیید نهایی (نقش مدیر سازمان) یا اعلام رد → پایان. شرط‌ها:
+    <code>review_result == "yes"</code> / <code>review_result == "no"</code>.
+  </p>
+</section>
+
+<!-- ==================== ۱۰. کارتابل ==================== -->
+<section class="card anchor-target" id="tasks">
+  <h2 class="sec">۱۰) کارتابل من (وظایف)</h2>
+  <p>
+    وظایف در انتظار شما (بر اساس تخصیص مستقیم یا نقش) اینجا فهرست می‌شوند. با «انجام وظیفه» فرم مرحله باز می‌شود؛
+    پس از تکمیل، پاسخ به‌صورت خودکار در «پاسخ‌های ثبت‌شده» فرم مربوطه ثبت (با اتصال به نمونه و وظیفه) و
+    فرایند به مرحله بعد می‌رود.
+  </p>
+  <ul>
+    <li>وظیفه تخصیص‌یافته به کاربر دیگر، برای شما قابل تکمیل نیست (خطای 403).</li>
+    <li>وظایف تکمیل‌شده با فیلتر «تکمیل‌شده» قابل مرور و مشاهده داده‌های ثبت‌شده‌اند.</li>
+    <li>اعلان وظیفه جدید در نوار بالای سامانه (دکمه «اعلان‌ها») نمایش داده می‌شود.</li>
+  </ul>
+</section>
+
+<!-- ==================== ۱۱. آزمون‌ها ==================== -->
+<section class="card anchor-target" id="assessments">
+  <h2 class="sec">۱۱) آزمون‌های مشاوره</h2>
+
+  <h3>الف) بانک آزمون و شناسنامه (بخش ۹ سند)</h3>
+  <p>
+    هر آزمون شناسنامه کامل دارد: نام فارسی/اصلی/اختصاری، حوزه، مؤلف، ناشر/دارنده حقوق، وضعیت مجوز
+    (دارای مجوز / مجوز خریداری‌شده / مالکیت عمومی / نامشخص / محدود)، جامعه هدف، تعداد سؤال، زمان،
+    شیوه نمره‌گذاری، منابع علمی، هنجارها و محدودیت‌ها. هر <b>نسخه</b> آزمون مستقل است: سؤال‌ها، گزینه‌ها،
+    سؤال‌های معکوس، سیاست پاسخ ناقص، قواعد محاسبه، هنجار و الگوی گزارش.
+  </p>
+
+  <h3>ب) جست‌وجوی اینترنتی آزمون‌ها (بخش ۱۰ سند)</h3>
+  <div class="step"><div class="n">1</div><div>دکمه «جست‌وجوی اینترنتی آزمون‌ها» → عبارت را وارد کنید. سامانه از منابع باز (ویکی‌پدیا فارسی + DuckDuckGo) نتایج متادیتا (عنوان، نشانی، خلاصه، تاریخ بازیابی) را می‌آورد.</div></div>
+  <div class="step"><div class="n">2</div><div>«ورود به‌عنوان پیش‌نویس» یک آزمون draft با منبع و وضعیت «نامشخص» می‌سازد؛ اجرای رسمی ندارد تا مجوز بررسی و متخصص تأیید کند.</div></div>
+  <div class="note danger">
+    مرزهای قابلیت (بخش ۱۰.۲ سند): یافتن نام آزمون به معنی مجاز بودن ذخیره یا بازنشر سؤال‌ها نیست.
+    سامانه پرداخت/ورود منابع را دور نمی‌زند، اطلاعات هویتی مراجع را به سرویس جست‌وجو نمی‌فرستد و
+    ورود خودکار قواعد نمره‌گذاری بدون تأیید متخصص ممنوع است.
+  </div>
+
+  <h3>ج) سؤال‌ها و قواعد نمره‌گذاری</h3>
+  <ul>
+    <li>در تب «سؤال‌ها و قواعد»: افزودن سؤال، متن، کد، پرچم <b>معکوس</b> و گزینه‌ها با نمره.</li>
+    <li>مقیاس‌ها: هر مقیاس با فهرست سؤال‌ها یا <b>عبارت محاسباتی امن</b> (توابع مجاز <code>sum</code>، <code>avg</code>، <code>min</code>، <code>max</code>، <code>round</code>) محاسبه می‌شود؛ بازه‌های تفسیر (حداقل/حداکثر + برچسب + توضیح) تعریف می‌شوند.</li>
+    <li>سیاست پاسخ ناقص: نادیده‌گرفتن (skip) / نمره صفر / بی‌اعتبار کردن نتیجه + حداقل نسبت پاسخ برای اعتبار.</li>
+    <li><b>ممنوعیت eval (بخش ۱۱.۲):</b> قواعد کاربر با ارزیاب امن AST اجرا می‌شود؛ دسترسی به فایل، شبکه، سیستم‌عامل و توابع ناشناس مسدود است و نسخه قواعد در هر محاسبه ثبت می‌شود.</li>
+  </ul>
+
+  <h3>د) اعتبارسنجی، تأیید و انتشار (بخش ۱۱.۳)</h3>
+  <p>
+    «اعتبارسنجی نمره‌گذاری» مثال‌های مرجع ثبت‌شده (Validation Cases) را اجرا و با خروجی مورد انتظار مقایسه می‌کند.
+    انتشار نسخه نیازمند: ثبت تأیید علمی متخصص + وضعیت مجوز معتبر + داشتن سؤال و قواعد. (AC-10، AC-11)
+  </p>
+
+  <h3>هـ) اجرا و نتیجه (بخش ۱۱.۴)</h3>
+  <div class="step"><div class="n">1</div><div>«اجرای آزمون» → نام پاسخ‌دهنده → شروع پاسخ‌دهی → انتخاب گزینه‌ها → «ثبت پاسخ و محاسبه نمره».</div></div>
+  <div class="step"><div class="n">2</div><div>صفحه نتیجه: نمره خام هر مقیاس، نمودار، تفسیر بر اساس بازه‌ها، نرخ کامل بودن پاسخ‌ها، هشدار اعتبار، متن گزارش و یادآوری «ابزار کمک به متخصص است، نه تشخیص قطعی».</div></div>
+  <div class="step"><div class="n">3</div><div>«محاسبه مجدد» یک ScoreRun جدید با تصویر قواعد می‌سازد؛ نتایج تاریخی بی‌صدا تغییر نمی‌کنند (AC-13).</div></div>
+
+  <div class="note info">
+    آزمون نمونه seed («پرسش‌نامه کوتاه رضایت شغلی — نمونه داخلی») محتوای ساخته‌شده داخلی با مجوز «owned» است تا
+    چرخه کامل بدون مشکل حقوقی قابل آزمایش باشد.
+  </div>
+</section>
+
+<!-- ==================== ۱۲. قراردادها ==================== -->
+<section class="card anchor-target" id="contracts">
+  <h2 class="sec">۱۲) قراردادها</h2>
+
+  <h3>طراحی الگو (بخش ۱۲.۱)</h3>
+  <div class="step"><div class="n">1</div><div>«الگوهای قرارداد» → «+ الگوی جدید» → ویرایشگر غنی فارسی (Tiptap) باز می‌شود: بولد/کج، عناوین، فهرست، <b>جدول</b>.</div></div>
+  <div class="step"><div class="n">2</div><div>در پنل «متغیرهای الگو»، متغیرها را با کلید نقطه‌ای تعریف کنید (مانند <code>party_a.full_name</code>، <code>contract.amount</code>) با نوع داده، پرچم الزامی و عنوان. سپس متغیر را از پنل «درج در متن» داخل متن بنشانید.</div></div>
+  <div class="step"><div class="n">3</div><div><b>بندهای شرطی:</b> با دکمه «بند شرطی» الگوی <code>{'%{%if key%}متن مشروط{%endif%}'}</code> درج می‌شود — اگر متغیر مقدار داشته باشد نمایش داده می‌شود.</div></div>
+  <div class="step"><div class="n">4</div><div>«پیش‌نمایش» رندر با داده خالی را نشان می‌دهد (متغیرهای خالی نشان‌دار). «انتشار الگو» با مجوز تأیید حقوقی (<code>contract.approve</code>) و ثبت نام تأییدکننده انجام می‌شود.</div></div>
+
+  <h3>تولید قرارداد (بخش ۱۲.۴)</h3>
+  <div class="step"><div class="n">1</div><div>«قراردادهای تولیدشده» → «+ تولید قرارداد از الگو» → انتخاب نسخه الگوی منتشرشده.</div></div>
+  <div class="step"><div class="n">2</div><div>فرم متغیرها خودکار ساخته می‌شود؛ متغیر الزامی خالی، تولید نهایی را مسدود می‌کند (AC-14).</div></div>
+  <div class="step"><div class="n">3</div><div>پس از تولید، <b>متن و داده‌ها منجمد</b> می‌شوند: ویرایش آینده الگو قرارداد قبلی را تغییر نمی‌دهد (AC-15). برای سند، هش SHA-256 ذخیره می‌شود که تشخیص تغییر فایل را ممکن می‌کند (توجه سند: هش به‌تنهایی امضای معتبر حقوقی نیست).</div></div>
+  <div class="step"><div class="n">4</div><div>«دریافت سند» یک فایل HTML آماده چاپ (با سربرگ/پابرگ و هش) می‌دهد که از مرورگر قابل چاپ به PDF است. دریافت در ممیزی ثبت می‌شود.</div></div>
+  <div class="note warn">
+    اعتبار حقوقی متن قرارداد باید توسط مسئول حقوقی بررسی شود؛ اتصال به امضای الکترونیکی معتبر، الحاقیه، تمدید و
+    یادآوری سررسید در قابلیت‌های توسعه‌ای فازهای بعد است (بخش ۱۲.۵ سند).
+  </div>
+</section>
+
+<!-- ==================== ۱۳. کاربران ==================== -->
+<section class="card anchor-target" id="users">
+  <h2 class="sec">۱۳) کاربران، نقش‌ها و مجوزها</h2>
+  <ul>
+    <li><b>تب کاربران:</b> ایجاد/ویرایش کاربر، تعیین نقش‌ها، فعال/غیرفعال‌سازی، تغییر رمز.</li>
+    <li><b>تب نقش‌ها و مجوزها:</b> ماتریس کامل ۲۶ مجوز در گروه‌های «سیستم، دسترسی، گزارش، فرایند، فرم، کاتالوگ، آزمون، قرارداد» — نقش‌های سیستمی ۱۱گانه سند از قبل ساخته شده‌اند و می‌توانید نقش سفارشی بسازید.</li>
+    <li>مجوزها همیشه در بک‌اند کنترل می‌شوند؛ حتی اگر رابط را دور بزنید، API بدون مجوز پاسخ 403 می‌دهد.</li>
+  </ul>
+</section>
+
+<!-- ==================== ۱۴. ممیزی ==================== -->
+<section class="card anchor-target" id="audit">
+  <h2 class="sec">۱۴) سوابق تغییرات (ممیزی)</h2>
+  <p>رویدادهای ثبت‌شده مطابق بخش ۱۹ سند: ورود و تلاش ناموفق، ایجاد/ویرایش/انتشار منابع، ثبت پاسخ، خروجی داده،
+  تولید و دریافت قرارداد، شروع/لغو اجرا، تکمیل وظیفه، تغییر قواعد آزمون، محاسبه مجدد نتیجه، تغییر تنظیمات و پشتیبان‌گیری.</p>
+  <ul>
+    <li>فیلتر بر اساس کاربر، نوع رویداد و موجودیت + صفحه‌بندی.</li>
+    <li>لاگ ممیزی فقط افزودنی است و در اختیار کاربران عادی برای ویرایش نیست (مجوز <code>audit.view</code>).</li>
+  </ul>
+</section>
+
+<!-- ==================== ۱۵. تنظیمات ==================== -->
+<section class="card anchor-target" id="settings">
+  <h2 class="sec">۱۵) تنظیمات و پشتیبان‌گیری</h2>
+  <ul>
+    <li><b>تنظیمات:</b> عنوان سامانه، حداکثر حجم آپلود، یکسان‌سازی ی/ي و ک/ك در جست‌وجو (کلید/مقدار قابل توسعه).</li>
+    <li><b>پشتیبان‌گیری:</b> با دکمه «گرفتن نسخه پشتیبان»، دیتابیس با SQLite Backup API سازگار با WAL کپی و دانلود می‌شود (کپی ساده فایل در حین فعالیت روش اصلی نیست — بخش ۱۶ سند). نسخه پشتیبان باید شامل فایل‌های پیوست، تنظیمات و نسخه برنامه نیز در محل جداگانه نگهداری و دوره‌ای بازیابی آزمایش شود (بخش ۲۰ سند).</li>
+    <li>یادآوری‌های امنیتی استقرار عملیاتی در همین صفحه فهرست شده‌اند.</li>
+  </ul>
+</section>
+
+<!-- ==================== ۱۶. سناریوها ==================== -->
+<section class="card anchor-target" id="scenarios">
+  <h2 class="sec">۱۶) سناریوهای عملی گام‌به‌گام</h2>
+
+  <h3>سناریو ۱ — از فیلد تا پاسخ و گزارش فراوانی</h3>
+  <div class="step"><div class="n">1</div><div>با <code>steward</code> در کاتالوگ، فیلد «شماره شناسنامه» بسازید (مترادف: شماره ثبت).</div></div>
+  <div class="step"><div class="n">2</div><div>با <code>fdesigner</code> فرم جدید بسازید، فیلد را از جعبه‌ابزار بکشید و به فیلد کاتالوگ وصل کنید + چند فیلد دیگر.</div></div>
+  <div class="step"><div class="n">3</div><div>انتشار نسخه → با <code>operator</code> دو سه پاسخ ثبت کنید → کد رهگیری بگیرید.</div></div>
+  <div class="step"><div class="n">4</div><div>با <code>steward</code> جزئیات فیلد را باز کنید: فراوانی، نرخ تکمیل و مسیر استفاده به‌روز است. خروجی CSV پاسخ‌ها را بگیرید.</div></div>
+
+  <h3>سناریو ۲ — طراحی و اجرای کامل یک فرایند</h3>
+  <div class="step"><div class="n">1</div><div>با <code>pdesigner</code> فرایند جدید بسازید و در ویرایشگر BPMN یک مسیر شامل دو User Task و یک Exclusive Gateway بکشید.</div></div>
+  <div class="step"><div class="n">2</div><div>به هر User Task فرم منتشرشده و نقش بدهید؛ روی یال‌های Gateway شرط بگذارید؛ ذخیره و اعتبارسنجی کنید.</div></div>
+  <div class="step"><div class="n">3</div><div>با <code>admin</code> انتشار دهید → با <code>operator</code> «شروع اجرا» → وظیفه در کارتابل ظاهر می‌شود.</div></div>
+  <div class="step"><div class="n">4</div><div>وظیفه را با داده فرم تکمیل کنید → Gateway مسیر درست را برمی‌دارد → وظیفه دوم برای نقش بعدی → خاتمه → تاریخچه کامل در تب اجراها.</div></div>
+
+  <h3>سناریو ۳ — چرخه کامل آزمون</h3>
+  <div class="step"><div class="n">1</div><div>با <code>assessor</code> آزمون «رضایت شغلی نمونه» را باز کنید؛ در تب سؤال‌ها «اعتبارسنجی نمره‌گذاری» را اجرا کنید — مثال‌های مرجع باید موفق باشند (مثلاً پاسخ کامل → نمره ۲۸).</div></div>
+  <div class="step"><div class="n">2</div><div>«اجرای آزمون» → پاسخ‌دهی به ۶ سؤال (دو سؤال معکوس) → ثبت و مشاهده نمره، تفسیر و گزارش.</div></div>
+  <div class="step"><div class="n">3</div><div>«محاسبه مجدد» را بزنید: ScoreRun دوم اضافه می‌شود و نتایج قبلی دست‌نخورده می‌ماند.</div></div>
+
+  <h3>سناریو ۴ — تولید قرارداد</h3>
+  <div class="step"><div class="n">1</div><div>با <code>contractx</code> الگوی «قرارداد ارائه خدمات مشاوره» را باز کنید؛ متن و متغیرها را ویرایش و منتشر کنید.</div></div>
+  <div class="step"><div class="n">2</div><div>«تولید قرارداد از الگو» → فرم متغیرها را پر کنید (اگر «نام طرف دوم» را خالی بگذارید تولید مسدود می‌شود — AC-14) → پیش‌نمایش → تولید.</div></div>
+  <div class="step"><div class="n">3</div><div>الگو را تغییر دهید و دوباره وارد قرارداد شوید: سند قبلی تغییری نکرده است (AC-15). سند را دانلود و چاپ کنید.</div></div>
+</section>
+
+<!-- ==================== ۱۷. API ==================== -->
+<section class="card anchor-target" id="api">
+  <h2 class="sec">۱۷) مرجع API</h2>
+  <p>پیشوند همه مسیرها <code>/api/v1</code> است. مستندات تعاملی کامل (OpenAPI/Swagger): <code>http://localhost:8000/api/docs</code></p>
+  <table>
+    <tr><th>گروه</th><th>مسیرهای اصلی</th></tr>
+    <tr><td>احراز هویت</td><td><code>POST /auth/login</code> · <code>POST /auth/refresh</code> · <code>POST /auth/logout</code> · <code>GET /auth/me</code></td></tr>
+    <tr><td>کاربران و نقش‌ها</td><td><code>GET/POST /users</code> · <code>PUT /users/{id}</code> · <code>GET/POST /roles</code> · <code>GET /permissions</code></td></tr>
+    <tr><td>کاتالوگ</td><td><code>GET/POST /catalog/fields</code> · <code>GET /catalog/fields/{id}/usage</code> · <code>GET /catalog/fields/{id}/statistics</code> · <code>GET /catalog/similar</code></td></tr>
+    <tr><td>فرم‌ها</td><td><code>GET/POST /forms</code> · <code>POST /forms/{id}/versions</code> · <code>PUT /form-versions/{id}/schema</code> · <code>POST /form-versions/{id}/publish</code> · <code>POST /form-versions/{id}/submissions</code> · <code>GET /forms/{id}/submissions/export?format=csv|xlsx|json</code></td></tr>
+    <tr><td>فرایندها</td><td><code>POST /processes</code> · <code>PUT /process-versions/{id}/diagram</code> · <code>POST /process-versions/{id}/validate|publish|instances</code> · <code>PUT /process-versions/{id}/bindings</code> · <code>GET /process-instances/{id}</code></td></tr>
+    <tr><td>کارتابل</td><td><code>GET /tasks/my</code> · <code>GET /tasks/{id}</code> · <code>POST /tasks/{id}/complete</code> · <code>POST /process-instances/{id}/cancel</code></td></tr>
+    <tr><td>آزمون‌ها</td><td><code>GET/POST /assessments</code> · <code>POST /assessments/{id}/versions</code> · <code>PUT /assessment-versions/{id}/content</code> · <code>POST /assessment-versions/{id}/validate|publish</code> · <code>POST /assessment-versions/{id}/administrations</code> · <code>POST /assessment-administrations/{id}/submit|rescore</code> · <code>POST /assessment-discovery/search|import</code></td></tr>
+    <tr><td>قراردادها</td><td><code>GET/POST /contract-templates</code> · <code>PUT /contract-template-versions/{id}/body|variables</code> · <code>POST /contract-template-versions/{id}/publish|preview</code> · <code>POST /contracts</code> · <code>GET /contracts/{id}/download</code></td></tr>
+    <tr><td>گزارش و سیستم</td><td><code>GET /dashboards/overview|processes|catalog</code> · <code>GET /audit-logs</code> · <code>GET/PUT /settings</code> · <code>POST /admin/backup</code> · <code>GET /notifications</code></td></tr>
+  </table>
+
+  <h3>نمونه‌های curl</h3>
+<pre>
+<span class="c"># ورود و گرفتن توکن</span>
+TOKEN=$(curl -s -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin@1234"}' | python3 -c "import sys,json;print(json.load(sys.stdin)['access_token'])")
+
+<span class="c"># داشبورد</span>
+curl -s http://localhost:8000/api/v1/dashboards/overview -H "Authorization: Bearer $TOKEN"
+
+<span class="c"># ایجاد فیلد مرجع</span>
+curl -s -X POST http://localhost:8000/api/v1/catalog/fields \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"tech_name":"postal_code","title_fa":"کد پستی","data_type":"text","validation_rules":{"pattern":"^[0-9]{10}$"}}'
+
+<span class="c"># ثبت پاسخ فرم</span>
+curl -s -X POST http://localhost:8000/api/v1/form-versions/VERSION_ID/submissions \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"data":{"full_name":"علی رضایی","mobile_number":"09121234567"}}'
+</pre>
+  <p class="muted">قواعد مشترک: احراز هویت در همه مسیرها (جز ورود)، صفحه‌بندی با <code>page/page_size</code>، ساختار یکسان خطا <code>{"error": true, "message": "...", "details": ...}</code>، ثبت رویدادهای حساس در ممیزی.</p>
+</section>
+
+<!-- ==================== ۱۸. امنیت ==================== -->
+<section class="card anchor-target" id="security">
+  <h2 class="sec">۱۸) امنیت و استقرار عملیاتی</h2>
+  <h3>الزامات پیش از بهره‌برداری واقعی (بخش ۱۹ سند)</h3>
+  <ul>
+    <li><b>HTTPS:</b> با Nginx یا Caddy فعال شود. نمونه پیکربندی Nginx:</li>
+  </ul>
+<pre>
+server {
+    listen 443 ssl;
+    server_name farayara.example.ir;
+    # ssl_certificate ...; ssl_certificate_key ...;
+    client_max_body_size 25m;
+
+    location /api/ { proxy_pass http://127.0.0.1:8000; proxy_set_header Host $host; }
+    location /     { root /var/www/farayara/dist; try_files $uri /index.html; }
+}
+<span class="c"># محدودیت تلاش ورود (نمونه):</span>
+<span class="c"># limit_req_zone $binary_remote_addr zone=login:10m rate=5r/m;</span>
+</pre>
+  <ul>
+    <li><b>کلید امضا:</b> <code>export FARAYARA_SECRET_KEY="$(python3 -c 'import secrets;print(secrets.token_hex(32))')"</code></li>
+    <li>رمز عبور با <b>Argon2</b> هش می‌شود؛ توکن‌ها انقضا و refresh دارند.</li>
+    <li>خروجی HTML قرارداد با bleach پاکسازی می‌شود؛ خروجی CSV/Excel در برابر فرمول‌تزریقی محافظت می‌شود؛ قواعد آزمون با ارزیاب امن اجرا می‌شود؛ پارس XML در برابر خطرات رایج مقاوم است.</li>
+    <li>SQLite معمولی رمزگذاری داخلی ندارد؛ برای داده‌های حساس، رمزگذاری دیسک/فایل و مدیریت کلید مستقل به‌صورت صریح انتخاب شود.</li>
+    <li>نسخه پشتیبان رمزگذاری و در محل جداگانه نگهداری و بازیابی آن دوره‌ای آزمایش شود (RPO/RTO با کارفرما تعیین شود).</li>
+  </ul>
+</section>
+
+<!-- ==================== ۱۹. عیب‌یابی ==================== -->
+<section class="card anchor-target" id="troubleshoot">
+  <h2 class="sec">۱۹) عیب‌یابی (FAQ)</h2>
+  <table>
+    <tr><th>مشکل</th><th>راه‌حل</th></tr>
+    <tr>
+      <td>صفحه ورود باز می‌شود ولی «خطای شبکه» می‌دهد</td>
+      <td>بک‌اند روشن نیست: <code>uvicorn app.main:app --port 8000</code> را اجرا کنید؛ پورت‌های 8000 و 5173 آزاد باشند.</td>
+    </tr>
+    <tr>
+      <td>پس از ری‌استارت سرور، همه یک‌باره لاگ‌اوت شدند</td>
+      <td><code>FARAYARA_SECRET_KEY</code> تنظیم نشده و کلید تصادفی عوض شده است — متغیر محیطی را ثابت تنظیم کنید.</td>
+    </tr>
+    <tr>
+      <td>خطای <code>database is locked</code></td>
+      <td>SQLite با busy_timeout=5000 و WAL پیکربندی شده؛ بار نوشتن هم‌زمان سنگین را کاهش دهید (بخش ۱۶ سند) و تراکنش‌ها کوتاه بمانند. برای بار بالا مسیر ارتقا به PostgreSQL پیش‌بینی شده است.</td>
+    </tr>
+    <tr>
+      <td>seed اجرا نمی‌شود / پیام «قبلاً بارگذاری شده»</td>
+      <td>برای شروع مجدد: سرور متوقف → حذف پوشه <code>backend/data</code> → دوباره <code>python -m app.seed</code> (داده‌ها پاک می‌شوند!).</td>
+    </tr>
+    <tr>
+      <td>انتشار فرایند خطای «عناصر خارج از دامنه اجرا» می‌دهد</td>
+      <td>طبق طراحی سند درست است؛ عنصر غیرقابل اجرا (مثلاً Parallel Gateway) را حذف یا با User Task/Gateway جایگزین کنید.</td>
+    </tr>
+    <tr>
+      <td>نمودار BPMN بعد از ذخیره خالی است</td>
+      <td>پیش از خروج از صفحه، «ذخیره نمودار» را بزنید (ذخیره خودکار نمودار در نسخه نخست وجود ندارد).</td>
+    </tr>
+    <tr>
+      <td>متن فارسی CSV در Excel به‌هم‌ریخته است</td>
+      <td>فایل با BOM تولید می‌شود؛ اگر نسخه قدیمی Excel مشکل داشت، از خروجی Excel (xlsx) استفاده کنید.</td>
+    </tr>
+    <tr>
+      <td>جست‌وجوی اینترنتی آزمون نتیجه نمی‌دهد</td>
+      <td>دسترسی شبکه سرور به منابع باز را بررسی کنید؛ خطاهای منبع در پاسخ API گزارش می‌شوند. این قابلیت به شبکه اینترنتی سرور وابسته است.</td>
+    </tr>
+    <tr>
+      <td>403 Forbidden در APIها</td>
+      <td>کاربر جاری مجوز لازم را ندارد؛ با مدیر سامانه بررسی کنید (ماتریس مجوزها در صفحه نقش‌ها).</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ==================== ۲۰. محدودیت‌ها ==================== -->
+<section class="card anchor-target" id="limits">
+  <h2 class="sec">۲۰) محدودیت‌های شناخته‌شده و نقشه راه</h2>
+  <h3>محدودیت‌های نسخه نخست (شفاف، مطابق الزام «فهرست محدودیت‌ها» در بخش ۲۳ سند)</h3>
+  <ul>
+    <li>موتور اجرای BPMN محدود به دامنه بخش ۵.۲ سند است؛ عناصر دیگر فقط قابل طراحی‌اند.</li>
+    <li>خروجی PDF/DOCX فارسی به‌صورت مستقیم تولید نمی‌شود؛ سند قرارداد HTML آماده چاپ است (فاز سه سند).</li>
+    <li>صف پس‌زمینه پایدار (Background Jobs) به‌صورت جدول ردیابی پیاده شده؛ OCR و تولید سنگین PDF به فاز پنج موکول است.</li>
+    <li>امضای ترسیمی در فرم‌ها معادل امضای الکترونیکی معتبر حقوقی نیست؛ اتصال به سرویس امضا پروژه جداگانه است.</li>
+    <li>استقرار چندسازمانی عمومی هدف نسخه نخست نیست؛ ساختار داده <code>organization_id</code> را از ابتدا دارد.</li>
+    <li>جست‌وجوی اینترنتی آزمون‌ها به دسترسی اینترنت سرور وابسته و فقط متادیتا است.</li>
+  </ul>
+  <h3>نقشه راه فازبندی (بخش ۲۲ سند)</h3>
+  <table>
+    <tr><th>فاز</th><th>دامنه</th><th>وضعیت در این پیاده‌سازی</th></tr>
+    <tr><td>فاز یک</td><td>هسته سامانه، فرم و کاتالوگ، ممیزی و پشتیبان‌گیری</td><td class="ok">✔ پیاده‌سازی و تست شده</td></tr>
+    <tr><td>فاز دو</td><td>ویرایشگر BPMN، موتور محدود اجرا، کارتابل، تاریخچه و اعلان</td><td class="ok">✔ پیاده‌سازی و تست شده</td></tr>
+    <tr><td>فاز سه</td><td>قراردادها: ویرایشگر، متغیر و شرط، تولید و نسخه‌بندی</td><td class="ok">✔ پیاده‌سازی (خروجی PDF در ادامه)</td></tr>
+    <tr><td>فاز چهار</td><td>بانک آزمون، نمره‌گذاری امن، هنجار و گزارش، جست‌وجوی اینترنتی</td><td class="ok">✔ پیاده‌سازی (هنجارسازی واقعی با متخصص)</td></tr>
+    <tr><td>فاز پنج</td><td>عناصر بیشتر BPMN، سرویس‌های خارجی، امضا، OCR، گزارش‌ساز پیشرفته</td><td class="warn">در برنامه توسعه</td></tr>
+  </table>
+  <footer>
+    فرایارا نسخه ۱.۰ — این راهنما همراه کد در مخزن پروژه نگهداری می‌شود. برای مستندات تعاملی API به <code>/api/docs</code> مراجعه کنید.
+  </footer>
+</section>
+
+</div>
+</body>
+</html>
