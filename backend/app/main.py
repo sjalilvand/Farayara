@@ -57,6 +57,11 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 @app.on_event("startup")
 def startup():
     Base.metadata.create_all(bind=engine)
+    # بارگذاری خودکار داده اولیه — فقط بار اول که پایگاه داده خالی است
+    # (seed خودش محافظت دارد و در صورت وجود داده، تکرار نمی‌شود)
+    from .seed import seed
+
+    seed()
 
 
 @app.get("/")

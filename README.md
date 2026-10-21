@@ -48,9 +48,10 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate        # ویندوز: .venv\Scripts\activate
 pip install -r requirements.txt
-python -m app.seed               # ایجاد داده اولیه و کاربران نمونه
 uvicorn app.main:app --reload --port 8000
 ```
+
+> **نکته:** داده اولیه (کاربران نمونه، فرم، فرایند، آزمون و الگوی قرارداد) در **اولین راه‌اندازی به‌صورت خودکار** بارگذاری می‌شود. اجرای دستی `python -m app.seed` اختیاری است و فقط برای بازنشانی دستی به کار می‌رود.
 
 مستندات تعاملی API: `http://localhost:8000/api/docs`
 

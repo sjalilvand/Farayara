@@ -33,8 +33,13 @@ class Settings(BaseSettings):
     max_page_size: int = 100
     rate_limit_per_minute: int = 300
 
-    # CORS
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    # CORS — پورت‌های رایج Vite (5173-5175) و پیش‌نمایش build (4173)
+    cors_origins: str = (
+        "http://localhost:5173,http://127.0.0.1:5173,"
+        "http://localhost:5174,http://127.0.0.1:5174,"
+        "http://localhost:5175,http://127.0.0.1:5175,"
+        "http://localhost:4173,http://127.0.0.1:4173"
+    )
 
     class Config:
         env_prefix = "FARAYARA_"

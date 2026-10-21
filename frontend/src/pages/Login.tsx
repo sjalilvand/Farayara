@@ -21,7 +21,11 @@ export default function Login() {
       setSession(r.data.access_token, r.data.refresh_token, r.data.user)
       nav('/')
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'ورود ناموفق بود')
+      if (!err?.response) {
+        setError('سرور بک‌اند در دسترس نیست؛ مطمئن شوید uvicorn روی پورت 8000 اجرا شده است (دستور: uvicorn app.main:app --reload از پوشه backend)')
+      } else {
+        setError(err?.response?.data?.message || 'ورود ناموفق بود')
+      }
     } finally {
       setBusy(false)
     }
